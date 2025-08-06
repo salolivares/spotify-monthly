@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/rs/zerolog/log"
 	"github.com/zmb3/spotify/v2"
 )
 
@@ -14,6 +14,8 @@ func fetchAllLikes(ctx context.Context, c *spotify.Client) ([]spotify.SavedTrack
 	var currentPage *spotify.SavedTrackPage
 	var err error
 
+	log.Info().Msg("Fetching liked tracks...")
+
 	// 50 is the maximum number of tracks that can be fetched in one request
 	// Ordered by AddedAt, descending
 	currentPage, err = c.CurrentUsersTracks(ctx, spotify.Limit(50))
@@ -21,7 +23,6 @@ func fetchAllLikes(ctx context.Context, c *spotify.Client) ([]spotify.SavedTrack
 		return nil, err
 	}
 
-	fmt.Println("Fetching liked tracks...")
 	for page := 1; ; page++ {
 		out = append(out, currentPage.Tracks...)
 		err = c.NextPage(ctx, currentPage)
@@ -29,10 +30,10 @@ func fetchAllLikes(ctx context.Context, c *spotify.Client) ([]spotify.SavedTrack
 			break
 		}
 		if err != nil {
-			fmt.Println("Error fetching page", page, ":", err)
+			return nil, err
 		}
 	}
-	fmt.Println("Fetched", len(out), "liked tracks.")
+	log.Info().Msgf("Fetched %d liked tracks.", len(out))
 
 	return out, nil
 }

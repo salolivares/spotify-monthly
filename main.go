@@ -2,24 +2,31 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	ctx := context.Background()
 	client := getClient(ctx)
 
 	user, err := client.CurrentUser(ctx)
 	if err != nil {
-		panic(err)
+		log.Fatal().Err(err).Msg("Failed to get current user")
 	}
-	fmt.Println("Logged in as:", user.DisplayName)
+
+	log.Info().Msgf("Logged in as: %s (%s)", user.DisplayName, user.ID)
+
 	likedTracks, err := fetchAllLikes(ctx, client)
 	if err != nil {
-		fmt.Println("error:", err)
+		log.Fatal().Err(err).Msg("Failed to fetch liked tracks")
 	}
 
 	for _, track := range likedTracks {
-		fmt.Println(track.Name, " - ", track.Album.Name, " (", track.AddedAt, ")")
+		log.Debug().Msgf("Track: %s - Album: %s - Added At: %s", track.Name, track.Album.Name, track.AddedAt)
 	}
 }
