@@ -1,6 +1,9 @@
 package main
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 func main() {
 	ctx := context.Background()
@@ -10,5 +13,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	println("Logged in as:", user.DisplayName)
+	fmt.Println("Logged in as:", user.DisplayName)
+	likedTracks, err := fetchAllLikes(ctx, client)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+
+	for _, track := range likedTracks {
+		fmt.Println(track.Name, " - ", track.Album.Name, " (", track.AddedAt, ")")
+	}
 }
