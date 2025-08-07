@@ -24,7 +24,9 @@ var auth = spotifyauth.New(
 	spotifyauth.WithRedirectURL(redirectURI),
 	spotifyauth.WithScopes(
 		spotifyauth.ScopeUserLibraryRead,
+		spotifyauth.ScopePlaylistReadPrivate,
 		spotifyauth.ScopePlaylistModifyPrivate,
+		spotifyauth.ScopePlaylistModifyPublic,
 	),
 )
 
