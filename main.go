@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"os"
 	"time"
 
@@ -10,7 +12,20 @@ import (
 )
 
 func main() {
+	var err error
+	var per Period
+
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	cmd := ""
+	if len(os.Args) > 1 {
+		cmd = os.Args[1]
+	}
+
+	month := flag.Int("month", 0, "Month to process (1-12). Defaults to current month.")
+
+	flag.CommandLine.Init(os.Args[0]+" "+cmd, flag.ContinueOnError)
+	_ = flag.CommandLine.Parse(os.Args[2:])
 
 	loc, err := time.LoadLocation("Local")
 	if err != nil {
@@ -18,32 +33,27 @@ func main() {
 	}
 
 	now := time.Now().In(loc)
-	currentYear := now.Year()
-	currentMonth := now.Month()
+	y := now.Year()
+	m := now.Month()
+	if *month != 0 {
+		m = time.Month(*month)
+	}
 
 	ctx := context.Background()
 	client := getClient(ctx)
 
-	user, err := client.CurrentUser(ctx)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to get current user")
+	switch cmd {
+	case "monthly":
+		per = monthPeriod(loc, y, m)
+		err = runPeriod(ctx, client, per, true)
+	default:
+		fmt.Println("Usage: spotifyx monthly [--month <1-12>]")
+		os.Exit(1)
 	}
 
-	log.Info().Msgf("Logged in as: %s (%s)", user.DisplayName, user.ID)
-
-	likedTracks, err := fetchAllLikes(ctx, client)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to fetch liked tracks")
-	}
-
-	for _, track := range likedTracks {
-		log.Debug().Msgf("Track: %s - Album: %s - Added At: %s", track.Name, track.Album.Name, track.AddedAt)
-	}
-
-	per := monthPeriod(loc, currentYear, currentMonth)
-	err = runPeriod(ctx, client, per, true)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Failed to run period for %s", per.Name)
 	}
+
 	log.Info().Msgf("Successfully processed period: %s", per.Name)
 }

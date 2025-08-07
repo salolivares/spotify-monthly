@@ -75,6 +75,8 @@ func runPeriod(ctx context.Context, c *spotify.Client, period Period, makePublic
 		return err
 	}
 
+	log.Info().Msgf("Logged in as: %s (%s)", user.DisplayName, user.ID)
+
 	likes, err := fetchAllLikes(ctx, c)
 	if err != nil {
 		return err
