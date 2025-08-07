@@ -17,6 +17,7 @@ func main() {
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
+	// TODO(sal): make this more robust. it fails when not passing in a subcommand.
 	cmd := ""
 	if len(os.Args) > 1 {
 		cmd = os.Args[1]
