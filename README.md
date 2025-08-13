@@ -11,3 +11,8 @@ Create a Spotify developer app at <https://developer.spotify.com/dashboard>. Ens
 ```plaintext
 SPOTIFY_ID=<id> SPOTIFY_SECRET=<secret> go run . monthly
 ```
+
+## Todo
+
+- Switch to a proper CLI library
+- Cache calls to spotify API. Fetching the liked songs could be heavy.
