@@ -16,3 +16,5 @@ SPOTIFY_ID=<id> SPOTIFY_SECRET=<secret> go run . monthly
 
 - Switch to a proper CLI library
 - Cache calls to spotify API. Fetching the liked songs could be heavy.
+- Generate playlist cover art
+- Add playlist to playlist folder (not supported by API yet)
