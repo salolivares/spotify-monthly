@@ -46,12 +46,14 @@ func main() {
 	switch cmd {
 	case "monthly":
 		per = monthPeriod(loc, y, m)
-		err = runPeriod(ctx, client, per, true)
+	case "seasonal":
+		per = seasonPeriod(loc, y, m)
 	default:
 		fmt.Println("Usage: spotifyx monthly [--month <1-12>]")
 		os.Exit(1)
 	}
 
+	err = runPeriod(ctx, client, per, true)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Failed to run period for %s", per.Name)
 	}

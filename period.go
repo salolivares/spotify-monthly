@@ -51,7 +51,7 @@ func seasonPeriod(loc *time.Location, year int, month time.Month) Period {
 		start = time.Date(year, time.September, 1, 0, 0, 0, 0, loc)
 		name = fmt.Sprintf("Fall %d", year)
 	default:
-		panic(fmt.Sprintf("invalid month: %d", month))
+		log.Fatal().Msgf("Invalid month %d for season period", month)
 	}
 
 	end := start.AddDate(0, 3, 0) // add 3 months to get exclusive end
